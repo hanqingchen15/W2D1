@@ -8,7 +8,7 @@ class Display
   end
 
   def render
-    puts "X   0    1    2    3    4    5    6    7"
+    puts "X  0  1  2  3  4  5  6  7"
     idx = 0
     while idx < 8
       string = ""
