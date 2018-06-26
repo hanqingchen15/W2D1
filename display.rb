@@ -16,9 +16,11 @@ class Display
       while i < 8
         pos = [idx, i]
         if pos == @cursor.cursor_pos
-          string += "  #{@board[pos].inspect}".colorize(:red)
-        else
+          string += "  #{@board[pos].inspect}".colorize(:green)
+        elsif @board[pos].nil?
           string += "  #{@board[pos].inspect}"
+        else
+          string += "  #{@board[pos].inspect}".colorize(@board[pos].color)
         end
         i += 1
       end
@@ -28,6 +30,7 @@ class Display
   end
 
   def play
+    self.render
     while true
       @cursor.get_input
       system ("clear")

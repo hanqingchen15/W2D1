@@ -5,8 +5,9 @@ class Board
     @grid = Array.new(8) {Array.new(8)}
     @grid.each_with_index do |row, i|
       if i < 2 || i > 5
-        @grid[i].map! do |square|
-          square = Piece.new
+        @grid[i].map!.with_index do |square, idx|
+          coordinate =[i, idx]
+          square = Piece.new(coordinate)
         end
       end
     end
