@@ -1,15 +1,19 @@
-require "Singleton"
+require "singleton"
 
 class NullPiece < Piece
   include Singleton
-  #
-  # def initialize(position)
-  #   super
-  # end
+  attr_accessor :color
+
+  def initialize
+    @color = :black
+  end
 
   def moves
   end
 
   def symbol
+  end
+  def inspect
+    "  "
   end
 end

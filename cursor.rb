@@ -33,15 +33,19 @@ MOVES = {
 class Cursor
 
   attr_reader :cursor_pos, :board
-
+  attr_accessor :selected
   def initialize(cursor_pos, board)
     @cursor_pos = cursor_pos
     @board = board
+    @selected = []
   end
 
   def get_input
     key = KEYMAP[read_char]
-    handle_key(key)
+    temp = handle_key(key)
+    if temp != nil
+      @selected << temp
+    end
   end
 
   private
@@ -85,7 +89,6 @@ class Cursor
     when :ctrl_c
       Process.exit
     end
-
   end
 
   def update_pos(diff)
@@ -95,7 +98,7 @@ class Cursor
       temp[i] = cursor_pos[i] + diff[i]
       i += 1
     end
-    
+
     if Board.valid_pos?(temp)
       @cursor_pos = temp
     end

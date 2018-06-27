@@ -1,10 +1,13 @@
+require 'byebug'
 require_relative "piece"
+require_relative "./chess_pieces/rook"
+require_relative "./chess_pieces/knight"
+require_relative "./chess_pieces/bishop"
+require_relative "./chess_pieces/queen"
+require_relative "./chess_pieces/king"
+require_relative "./chess_pieces/pawn"
+require_relative "null_piece"
 class Board
-  PIECES = {[0, 0] => "♖", [0, 7] => "♖", [7, 0] => "♜", [7, 7] => "♜",
-    [0, 1] => "♘", [7, 1] => "♞", [0, 6] => "♘", [7, 6] => "♞",
-    [0, 2] => "♗", [0, 5] => "♗", [7, 2] => "♝", [7, 5] => "♝",
-    [0, 3] => "♕", [7, 3] => "♛",
-    [0, 4] => "♔", [7, 4] => "♚",}
   attr_reader :grid
   def initialize
     @grid = Array.new(8) {Array.new(8)}
@@ -12,44 +15,45 @@ class Board
   end
 
   def setup
-
     @grid.each_with_index do |row, i|
-        @grid[i].map!.with_index do |square, idx|
+        @grid[i].each_with_index do |square, idx|
           pos =[i, idx]
-          case
-          when pos == [0,0] || pos == [0,7]
-            square = Rook.new(:red, self, pos)
-          when pos == [7,0] || pos == [7,7]
-            square = Rook.new(:blue, self, pos)
-          when pos == [0,1] || pos == [0,6]
-            square = Knight.new(:red, self, pos)
-          when pos == [7,1] || pos == [7,6]
-            square = Knight.new(:blue, self, pos)
-          when pos == [0, 2] || pos == [0, 5]
-            square = Bishop.new(:red, self, pos)
-          when pos == [7, 2] || pos == [7, 5]
-            square = Bishop.new(:blue, self, pos)
-          when pos == [0, 3]
-            square = Queen.new(:red, self, pos)
-          when pos == [0, 4]
-            square = King.new(:red, self, pos)
-          when pos == [7, 3]
-            square == Queen.new(:blue, self, pos)
-          when pos == [7, 4]
-            square = King.new(:blue, self, pos)
-          when pos[i] == 1
-            square = Pawn.new(:red, self, pos)
-          when pos[i] == 6
-            square = Pawn.new(:blue, self, pos)
+          case pos
+          when [0,0], [0,7]
+            self[pos] = Rook.new(:red, self, pos)
+          when [7,0], [7,7]
+            self[pos] = Rook.new(:blue, self, pos)
+          when [0,1], [0,6]
+            self[pos] = Knight.new(:red, self, pos)
+          when [7,1], [7,6]
+            self[pos] = Knight.new(:blue, self, pos)
+          when [0,2], [0,5]
+            self[pos] = Bishop.new(:red, self, pos)
+          when [7,2], [7,5]
+            self[pos] = Bishop.new(:blue, self, pos)
+          when [0,3]
+            self[pos] = Queen.new(:red, self, pos)
+          when [0,4]
+            self[pos] = King.new(:red, self, pos)
+          when [7,3]
+            self[pos] = Queen.new(:blue, self, pos)
+          when [7,4]
+            self[pos] = King.new(:blue, self, pos)
+          when [1,0], [1,1], [1,2], [1,3], [1,4], [1,5], [1,6], [1,7]
+            self[pos] = Pawn.new(:red, self, pos)
+          when [6,0], [6,1], [6,2], [6,3], [6,4], [6,5], [6,6], [6,7]
+            self[pos] = Pawn.new(:blue, self, pos)
           else
-            square = NullPiece.instance()
+            self[pos] = NullPiece.instance()
           end
-
-          square = Piece.new(color, board, pos)
+          if pos[i] == 1
+            square = Pawn.new(:red, self, pos)
+          elsif pos [i] == 6
+            square = Pawn.new(:blue, self, pos)
+          end
         end
       end
     end
-  end
 
   def [](pos)
     row, col = pos
@@ -67,7 +71,7 @@ class Board
 
   def move_piece(start, finish)
     raise "Start position is empty" if self[start].nil?
-    raise "End position out of bounds" if Board.valid_pos?(finish)
+    raise "End position out of bounds" unless Board.valid_pos?(finish)
     self[start], self[finish] = self[finish], self[start]
   end
 
@@ -75,9 +79,3 @@ class Board
     pos.none?{|e|e > 7 || e < 0}
   end
 end
-
-#
-# if $PROGRAM_NAME == __FILE__
-#   b = Board.new
-#   p b
-# end

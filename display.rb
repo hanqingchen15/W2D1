@@ -15,12 +15,15 @@ class Display
       i = 0
       while i < 8
         pos = [idx, i]
-        if pos == @cursor.cursor_pos
-          string += "  #{@board[pos].inspect}".colorize(:green)
-        elsif @board[pos].nil?
-          string += "  #{@board[pos].inspect}"
+        color = (i + idx).even? ? :white : :black
+        if @cursor.selected.include?(pos)
+          string += " #{@board[pos].inspect}".colorize(:color=>:light_yellow)
+        elsif pos == @cursor.cursor_pos
+          string += "  #{@board[pos].inspect} ".colorize(:color=>:green, :background=>:orange)
+        elsif @board[pos].is_a?(NullPiece)
+          string += " #{@board[pos].inspect}  ".colorize(:background=>color)
         else
-          string += "  #{@board[pos].inspect}".colorize(@board[pos].color)
+          string += "  #{@board[pos].inspect}".colorize(:color=>@board[pos].color, :background=>color)
         end
         i += 1
       end
@@ -32,10 +35,19 @@ class Display
   def play
     self.render
     while true
+      #return selected position
       @cursor.get_input
+      if @cursor.selected.length == 2
+        selected_pos = @cursor.selected.pop
+        next_pos = @cursor.selected.pop
+        if @board[next_pos].possible_moves.include?(selected_pos)
+          @board.move_piece(selected_pos, next_pos)
+
+          @board[selected_pos].move_dirs(selected_pos)
+        end
+      end
       system ("clear")
       self.render
-
     end
   end
 end

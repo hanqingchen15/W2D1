@@ -7,10 +7,14 @@ class Piece
     @pos = pos
   end
 
-  def moves
+  def valid_moves
+    possible_moves = self.possible_moves
+    possible_moves.reject! do |move|
+      board[move].color == self.color
+    end
   end
 
   def inspect
-    "#{@name}"
+    "#{@symbol}"
   end
 end
